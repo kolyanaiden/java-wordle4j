@@ -100,17 +100,18 @@ public class WordleDictionary {
             throw new IllegalArgumentException("Слова должны быть одинаковой длины");
         }
 
+        // Нормализуем оба слова
         guess = WordleDictionaryLoader.normalizeWord(guess);
         answer = WordleDictionaryLoader.normalizeWord(answer);
 
         int length = guess.length();
         char[] result = new char[length];
-        char[] answerChars = answer.toCharArray();
 
-        // Массив для отслеживания использованных позиций в ответе
+        // Создаем копию букв ответа для отслеживания использования
+        char[] answerChars = answer.toCharArray();
         boolean[] used = new boolean[length];
 
-        // Первый проход: точные совпадения
+        // Первый проход: ищем точные совпадения
         for (int i = 0; i < length; i++) {
             if (guess.charAt(i) == answerChars[i]) {
                 result[i] = '+';
@@ -118,13 +119,16 @@ public class WordleDictionary {
             }
         }
 
-        // Второй проход: буквы на других позициях
+        // Второй проход: ищем буквы на других позициях
         for (int i = 0; i < length; i++) {
-            if (result[i] == '+') continue;
+            if (result[i] == '+') {
+                continue; // Уже обработали как точное совпадение
+            }
 
             char guessChar = guess.charAt(i);
             boolean found = false;
 
+            // Ищем эту букву в ответе на других позициях
             for (int j = 0; j < length; j++) {
                 if (!used[j] && guessChar == answerChars[j]) {
                     result[i] = '^';

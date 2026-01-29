@@ -46,7 +46,7 @@ class WordleTest {
         assertEquals("+++++", WordleDictionary.compareWords("ручка", "ручка"));
 
         // Буквы на других позициях
-        assertEquals("^---^", WordleDictionary.compareWords("круча", "ручка"));
+        assertEquals("^^^^+", WordleDictionary.compareWords("круча", "ручка"));
 
         // Смешанный случай
         assertEquals("+^---", WordleDictionary.compareWords("речка", "ручка"));
