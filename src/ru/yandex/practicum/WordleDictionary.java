@@ -100,24 +100,25 @@ public class WordleDictionary {
             throw new IllegalArgumentException("Слова должны быть одинаковой длины");
         }
 
+        // Нормализуем оба слова
+        guess = WordleDictionaryLoader.normalizeWord(guess);
+        answer = WordleDictionaryLoader.normalizeWord(answer);
+
         int length = guess.length();
         char[] result = new char[length];
         char[] answerChars = answer.toCharArray();
 
-        // Отмечаем точные совпадения
+        // Первый проход: точные совпадения
         for (int i = 0; i < length; i++) {
             if (guess.charAt(i) == answerChars[i]) {
                 result[i] = '+';
-                // "Используем" букву в ответе
-                answerChars[i] = '*';
+                answerChars[i] = ' '; // Помечаем как использованную
             }
         }
 
-        // Ищем буквы на других позициях
+        // Второй проход: буквы на других позициях
         for (int i = 0; i < length; i++) {
-            if (result[i] == '+') {
-                continue; // Уже обработали
-            }
+            if (result[i] == '+') continue;
 
             char guessChar = guess.charAt(i);
             boolean found = false;
@@ -125,7 +126,7 @@ public class WordleDictionary {
             for (int j = 0; j < length; j++) {
                 if (answerChars[j] == guessChar) {
                     result[i] = '^';
-                    answerChars[j] = '*'; // "Используем" букву
+                    answerChars[j] = ' '; // Помечаем как использованную
                     found = true;
                     break;
                 }
