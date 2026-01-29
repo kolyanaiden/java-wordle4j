@@ -45,23 +45,17 @@ class WordleTest {
         // Точное совпадение
         assertEquals("+++++", WordleDictionary.compareWords("ручка", "ручка"));
 
-        // Буквы на других позициях - ДЕБАГ
-        String result = WordleDictionary.compareWords("круча", "ручка");
-        System.out.println("DEBUG: 'круча' vs 'ручка' = " + result);
-        assertEquals("^^^^+", result);
+        // Буквы на других позициях
+        assertEquals("^^^^+", WordleDictionary.compareWords("круча", "ручка"));
 
-        // Смешанный случай - ДЕБАГ
-        result = WordleDictionary.compareWords("речка", "ручка");
-        System.out.println("DEBUG: 'речка' vs 'ручка' = " + result);
-        assertEquals("+^---", result);
+        // Смешанный случай: "речка" vs "ручка"
+        assertEquals("+-+++", WordleDictionary.compareWords("речка", "ручка"));
 
         // Буквы отсутствуют
         assertEquals("-----", WordleDictionary.compareWords("домен", "ручка"));
 
-        // Тест с повторяющимися буквами - ДЕБАГ
-        result = WordleDictionary.compareWords("оборо", "обвод");
-        System.out.println("DEBUG: 'оборо' vs 'обвод' = " + result);
-        assertEquals("++---", result);
+        // Тест с повторяющимися буквами: "оборо" vs "обвод"
+        assertEquals("++^--", WordleDictionary.compareWords("оборо", "обвод"));
     }
 
     @Test
