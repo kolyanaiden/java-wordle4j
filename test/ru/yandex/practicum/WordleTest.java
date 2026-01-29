@@ -14,21 +14,14 @@ class WordleTest {
 
     @BeforeAll
     static void setUpAll() {
-        // Создаем тестовый словарь
+        // Создаем тестовый словарь ТОЛЬКО из 5-буквенных слов
         List<String> testWords = Arrays.asList(
-                "стол", "стул", "ручка", "книга", "окно",
-                "ручка", "лист", "река", "лес", "дом",
-                "вода", "земля", "воздух", "огонь", "метал"
+                "ручка", "книга", "листк", "речка", "степь",
+                "земля", "огонь", "водар", "метал", "небоо",
+                "солне", "ветер", "город", "полец", "леска"
         );
 
-        // Добавляем 5-буквенные слова
-        testWords = testWords.stream()
-                .filter(word -> word.length() == 5)
-                .toList();
-
         testDictionary = new WordleDictionary(testWords);
-
-        // Создаем тестовый лог
         testLog = new PrintWriter(System.out);
     }
 
@@ -60,6 +53,9 @@ class WordleTest {
 
         // Буквы отсутствуют
         assertEquals("-----", WordleDictionary.compareWords("домен", "ручка"));
+
+        // Тест с повторяющимися буквами
+        assertEquals("++---", WordleDictionary.compareWords("оборо", "обвод"));
     }
 
     @Test

@@ -95,49 +95,42 @@ public class WordleDictionary {
         return true;
     }
 
-    /**
-     * Сравнивает два слова по правилам Wordle
-     * @param guess предполагаемое слово
-     * @param answer правильное слово
-     * @return строка с символами +, ^, -
-     */
     public static String compareWords(String guess, String answer) {
         if (guess.length() != answer.length()) {
             throw new IllegalArgumentException("Слова должны быть одинаковой длины");
         }
 
-        char[] result = new char[guess.length()];
+        int length = guess.length();
+        char[] result = new char[length];
         char[] answerChars = answer.toCharArray();
-        boolean[] used = new boolean[answer.length()];
 
-        // Первый проход: находим точные совпадения
-        for (int i = 0; i < guess.length(); i++) {
+        // Отмечаем точные совпадения
+        for (int i = 0; i < length; i++) {
             if (guess.charAt(i) == answerChars[i]) {
                 result[i] = '+';
-                used[i] = true;
+                // "Используем" букву в ответе
+                answerChars[i] = '*';
             }
         }
 
-        // Второй проход: находим буквы в других местах
-        for (int i = 0; i < guess.length(); i++) {
+        // Ищем буквы на других позициях
+        for (int i = 0; i < length; i++) {
             if (result[i] == '+') {
-                continue;
+                continue; // Уже обработали
             }
 
             char guessChar = guess.charAt(i);
             boolean found = false;
 
-            // Ищем букву в неиспользованных позициях
-            for (int j = 0; j < answer.length(); j++) {
-                if (!used[j] && answerChars[j] == guessChar) {
+            for (int j = 0; j < length; j++) {
+                if (answerChars[j] == guessChar) {
                     result[i] = '^';
-                    used[j] = true;
+                    answerChars[j] = '*'; // "Используем" букву
                     found = true;
                     break;
                 }
             }
 
-            // Если не нашли - буквы нет в слове
             if (!found) {
                 result[i] = '-';
             }
