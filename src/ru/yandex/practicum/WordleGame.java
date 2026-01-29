@@ -198,15 +198,3 @@ public class WordleGame {
 
 }
 
-/**
- * Исключение для игровых ситуаций
- */
-class WordleException extends Exception {
-    @Serial
-    private static final long serialVersionUID = 1674308669077658573L;
-
-    public WordleException(String message) {
-        super(message);
-    }
-}
-
