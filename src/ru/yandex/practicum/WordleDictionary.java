@@ -107,38 +107,45 @@ public class WordleDictionary {
         int length = guess.length();
         char[] result = new char[length];
 
-        // Создаем копию букв ответа для отслеживания использования
-        char[] answerChars = answer.toCharArray();
-        boolean[] used = new boolean[length];
+        // Массивы для отслеживания использованных позиций
+        boolean[] guessUsed = new boolean[length];
+        boolean[] answerUsed = new boolean[length];
 
-        // Первый проход: ищем точные совпадения
+        // Шаг 1: Ищем точные совпадения (правильная буква на правильном месте)
         for (int i = 0; i < length; i++) {
-            if (guess.charAt(i) == answerChars[i]) {
+            if (guess.charAt(i) == answer.charAt(i)) {
                 result[i] = '+';
-                used[i] = true;
+                guessUsed[i] = true;
+                answerUsed[i] = true;
             }
         }
 
-        // Второй проход: ищем буквы на других позициях
+        // Шаг 2: Ищем буквы на неправильных позициях
         for (int i = 0; i < length; i++) {
             if (result[i] == '+') {
-                continue; // Уже обработали как точное совпадение
+                continue; // Уже обработано
             }
 
-            char guessChar = guess.charAt(i);
-            boolean found = false;
+            char currentChar = guess.charAt(i);
 
             // Ищем эту букву в ответе на других позициях
             for (int j = 0; j < length; j++) {
-                if (!used[j] && guessChar == answerChars[j]) {
+                if (!answerUsed[j] && currentChar == answer.charAt(j)) {
                     result[i] = '^';
-                    used[j] = true;
-                    found = true;
+                    answerUsed[j] = true;
                     break;
                 }
             }
 
-            if (!found) {
+            // Если не нашли совпадение
+            if (result[i] == 0) {
+                result[i] = '-';
+            }
+        }
+
+        // Заполняем оставшиеся позиции
+        for (int i = 0; i < length; i++) {
+            if (result[i] == 0) {
                 result[i] = '-';
             }
         }
