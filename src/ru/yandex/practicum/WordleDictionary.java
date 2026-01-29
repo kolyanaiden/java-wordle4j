@@ -100,7 +100,6 @@ public class WordleDictionary {
             throw new IllegalArgumentException("Слова должны быть одинаковой длины");
         }
 
-        // Нормализуем оба слова
         guess = WordleDictionaryLoader.normalizeWord(guess);
         answer = WordleDictionaryLoader.normalizeWord(answer);
 
@@ -108,11 +107,14 @@ public class WordleDictionary {
         char[] result = new char[length];
         char[] answerChars = answer.toCharArray();
 
+        // Массив для отслеживания использованных позиций в ответе
+        boolean[] used = new boolean[length];
+
         // Первый проход: точные совпадения
         for (int i = 0; i < length; i++) {
             if (guess.charAt(i) == answerChars[i]) {
                 result[i] = '+';
-                answerChars[i] = ' '; // Помечаем как использованную
+                used[i] = true;
             }
         }
 
@@ -124,9 +126,9 @@ public class WordleDictionary {
             boolean found = false;
 
             for (int j = 0; j < length; j++) {
-                if (answerChars[j] == guessChar) {
+                if (!used[j] && guessChar == answerChars[j]) {
                     result[i] = '^';
-                    answerChars[j] = ' '; // Помечаем как использованную
+                    used[j] = true;
                     found = true;
                     break;
                 }

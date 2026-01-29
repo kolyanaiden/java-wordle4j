@@ -90,25 +90,50 @@ public class WordleGame {
      * Обновить информацию о буквах на основе результата сравнения
      */
     private void updateLetterInfo(String word, String comparison) {
+        // Создаем копию букв ответа для отслеживания использования
+        Map<Character, Integer> availableLetters = new HashMap<>();
+        for (char c : answer.toCharArray()) {
+            availableLetters.put(c, availableLetters.getOrDefault(c, 0) + 1);
+        }
+
+        // Первый проход: точные совпадения
         for (int i = 0; i < word.length(); i++) {
             char letter = word.charAt(i);
             char result = comparison.charAt(i);
 
-            switch (result) {
-                case '+':
-                    // Буква на правильной позиции
-                    knownLetters.add(letter);
-                    correctPositions.put(i, letter);
-                    break;
-                case '^':
-                    // Буква есть, но не на этой позиции
+            if (result == '+') {
+                knownLetters.add(letter);
+                correctPositions.put(i, letter);
+                availableLetters.put(letter, availableLetters.get(letter) - 1);
+            }
+        }
+
+        // Второй проход: другие символы
+        for (int i = 0; i < word.length(); i++) {
+            char letter = word.charAt(i);
+            char result = comparison.charAt(i);
+
+            if (result == '+') {
+                continue; // Уже обработали
+            }
+
+            if (result == '^') {
+                knownLetters.add(letter);
+                wrongPositions.computeIfAbsent(i, k -> new HashSet<>()).add(letter);
+
+                // Уменьшаем количество доступных букв
+                if (availableLetters.getOrDefault(letter, 0) > 0) {
+                    availableLetters.put(letter, availableLetters.get(letter) - 1);
+                }
+            } else if (result == '-') {
+                // Буква может отсутствовать полностью ИЛИ все экземпляры уже использованы
+                if (!availableLetters.containsKey(letter) || availableLetters.get(letter) == 0) {
+                    excludedLetters.add(letter);
+                } else {
+                    // Буква есть, но все экземпляры уже использованы для других позиций
                     knownLetters.add(letter);
                     wrongPositions.computeIfAbsent(i, k -> new HashSet<>()).add(letter);
-                    break;
-                case '-':
-                    // Буквы нет в слове
-                    excludedLetters.add(letter);
-                    break;
+                }
             }
         }
     }
@@ -121,26 +146,13 @@ public class WordleGame {
             throw new WordleException("Попытки закончились");
         }
 
-        // Получаем все слова, соответствующие текущим условиям
-        List<String> possibleWords = dictionary.getFilteredWords(knownLetters, excludedLetters, correctPositions);
-
-        // Дополнительная фильтрация по неправильным позициям
-        possibleWords = possibleWords.stream()
-                .filter(word -> matchesWrongPositions(word))
-                .collect(Collectors.toList());
-
-        // Убираем слова, которые уже были предложены
-        possibleWords.removeAll(hints);
-
-        if (possibleWords.isEmpty()) {
-            throw new WordleException("Нет подходящих слов для подсказки");
+        // Простая подсказка - случайное слово из словаря
+        String hint = dictionary.getRandomWord();
+        while (hints.contains(hint)) {
+            hint = dictionary.getRandomWord();
         }
 
-        // Выбираем случайное слово
-        Random random = new Random();
-        String hint = possibleWords.get(random.nextInt(possibleWords.size()));
         hints.add(hint);
-
         log.println("Подсказка: " + hint);
 
         return hint;
@@ -157,19 +169,6 @@ public class WordleGame {
             for (char letter : wrongLetters) {
                 // Буква не должна быть на этой позиции
                 if (word.charAt(position) == letter) {
-                    return false;
-                }
-
-                // Буква должна быть в слове где-то еще
-                boolean foundElsewhere = false;
-                for (int i = 0; i < word.length(); i++) {
-                    if (i != position && word.charAt(i) == letter) {
-                        foundElsewhere = true;
-                        break;
-                    }
-                }
-
-                if (!foundElsewhere) {
                     return false;
                 }
             }
