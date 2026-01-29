@@ -2,7 +2,6 @@ package ru.yandex.practicum;
 
 import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Класс, представляющий игру Wordle
